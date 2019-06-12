@@ -1,0 +1,22 @@
+  NovaServers.boot_and_delete_server:
+    -
+      args:
+        flavor:
+            name: "cirros-flavor"
+        image:
+            name: "cirros"
+        auto_assign_nic: true
+      runner:
+        type: "constant"
+        times: 300
+        concurrency: 40
+      context:
+        users:
+          tenants: 100
+          users_per_tenant: 2
+        network:
+          start_cidr: "178.0.0.0/24"
+          networks_per_tenant: 2
+      sla:
+        failure_rate:
+          max: 0

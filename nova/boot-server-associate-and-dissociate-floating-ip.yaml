@@ -1,0 +1,48 @@
+{% set flavor_name = flavor_name or "m1.tiny" %}
+---
+  NovaServers.boot_server_associate_and_dissociate_floating_ip:
+#    -
+#      args:
+#        flavor:
+#            name: "2u2r5g"
+#        image:
+#            name: "RHEL6.7-virtio-5GB-CloundInit-v20161208-Tony"
+#        auto_assign_nic: true
+#      runner:
+#        type: "constant"
+#        times: 20
+#        concurrency: 20
+#      context:
+#        users:
+#          tenants: 3
+#          users_per_tenant: 2
+#        network: 
+#          start_cidr: "177.77.77.0/24"
+#          networks_per_tenant: 1
+#      sla:
+#        failure_rate:
+#          max: 0
+   -
+      args:
+        flavor:
+            name: "2u2r4g"
+        image:
+            name: "Ubuntu_14.04_Srv_Cloud_v1.4_with_keepalived-Tony"
+        create_floating_ip_args:
+            ext_network: "bad1960c-c564-43b7-84cc-8795c89974a9"
+        auto_assign_nic: true
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 20
+      context:
+        users:
+          tenants: 3
+          users_per_tenant: 2
+        network:
+          start_cidr: "178.78.78.0/24"
+          networks_per_tenant: 1
+      sla:
+        failure_rate:
+          max: 0
+

@@ -1,0 +1,163 @@
+{% set flavor_name = flavor_name or "m1.tiny" %}
+---
+  KeystoneBasic.create_tenant_with_users:
+    -
+      args:
+        users_per_tenant: 1
+      runner:
+        type: "constant"
+        times: 1200
+        concurrency: 300
+      sla:
+        failure_rate:
+          max: 5
+
+  NovaServers.boot_and_delete_server:
+    -
+      args:
+        flavor:
+            name: "cirros-flavor"
+        image:
+            name: "cirros"
+        auto_assign_nic: true
+      runner:
+        type: "constant"
+        times: 300
+        concurrency: 150
+      context:
+        users:
+          tenants: 1
+          users_per_tenant: 1
+        network:
+          start_cidr: "178.0.0.0/24"
+          networks_per_tenan$: 1
+      sla:
+        failure_rate:
+          max: 3
+
+    -
+      args:
+        flavor:
+            name: "2u2r4g"
+        image:
+            name: "Ubuntu_14.04_Srv_Cloud_v1.4_with_keepalived-Tony"
+        auto_assign_nic: true
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 20
+      context:
+        users:
+          tenants: 1
+          users_per_tenant: 1
+        network:
+          start_cidr: "178.0.0.0/24"
+          networks_per_tenant: 2
+      sla:
+        failure_rate:
+          max: 3
+
+  NovaServers.list_servers:
+    -
+      args:
+        detailed: True
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 20
+      context:
+        users:
+          tenants: 1
+          users_per_tenant: 1
+        servers:
+          flavor:
+              name: "cirros-flavor"
+          image:
+              name: "cirros"
+          servers_per_tenant: 2
+          nics:
+              [net-id: "a896f01a-b6c4-42a2-9839-8b4b7b533b34"]
+      sla:
+        failure_rate:
+          max: 3
+
+  NovaServers.boot_server_associate_and_dissociate_floating_ip:
+   -
+      args:
+        flavor:
+            name: "2u2r4g"
+        image:
+            name: "Ubuntu_14.04_Srv_Cloud_v1.4_with_keepalived-Tony"
+        create_floating_ip_args:
+            ext_network: "bad1960c-c564-43b7-84cc-8795c89974a9"
+        auto_assign_nic: true
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 20
+      context:
+        users:
+          tenants: 3
+          users_per_tenant: 2
+        network:
+          start_cidr: "178.78.78.0/24"
+          networks_per_tenant: 1
+      sla:
+        failure_rate:
+          max: 3
+
+  CinderVolumes.create_volume_from_snapshot:
+    -
+      args:
+          do_delete: true
+      runner:
+        type: "constant"
+        times: 10
+        concurrency: 10
+      context:
+        users:
+          tenants: 1
+          users_per_tenant: 1
+        volumes:
+          size: 5
+      sla:
+        failure_rate:
+          max: 3
+
+  CinderVolumes.create_and_delete_volume:
+    -
+      args:
+        size: 4
+        image:
+            name: "Ubuntu_14.04_Srv_Cloud_v1.4_with_keepalived-Tony"
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 20
+      context:
+        users:
+          tenants: 2
+          users_per_tenant: 2
+      sla:
+        failure_rate:
+          max: 3
+
+  NeutronNetworks.create_and_delete_networks:
+    -
+      args:
+        network_create_args: {}
+      runner:
+        type: "constant"
+        times: 100
+        concurrency: 20
+      context:
+        users:
+          tenants: 3
+          users_per_tenant: 3
+        quotas:
+          neutron:
+            network: -1
+      sla:
+        failure_rate:
+          max: 3
+

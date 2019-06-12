@@ -1,0 +1,18 @@
+---
+  CinderVolumes.create_and_delete_volume:
+    -
+      args:
+        size: 4
+        image:
+            name: "Ubuntu_14.04_Srv_Cloud_v1.4_with_keepalived-Tony"
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 20
+      context:
+        users:
+          tenants: 2
+          users_per_tenant: 2
+      sla:
+        failure_rate:
+          max: 0

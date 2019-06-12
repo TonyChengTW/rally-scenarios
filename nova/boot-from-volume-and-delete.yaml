@@ -1,0 +1,25 @@
+{% set flavor_name = flavor_name or "m1.tiny" %}
+{% set volume_type = volume_type or "" %}
+---
+  NovaServers.boot_server_from_volume_and_delete:
+    -
+      args:
+        flavor:
+            name: "2u2r4g"
+        image:
+            name: "Ubuntu_14.04_Srv_Cloud_v1.4_with_keepalived-Tony"
+        volume_size: 30
+        volume_type: "CEPH"
+        force_delete: false
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 20
+        timeout: 1200
+      context:
+        users:
+          tenants: 10
+          users_per_tenant: 2
+      sla:
+        failure_rate:
+          max: 0

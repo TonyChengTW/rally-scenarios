@@ -1,0 +1,25 @@
+{% set flavor_name = flavor_name or "m1.tiny" %}
+---
+  NovaServers.list_servers:
+    -
+      args:
+        detailed: True
+      runner:
+        type: "constant"
+        times: 20
+        concurrency: 20
+      context:
+        users:
+          tenants: 1
+          users_per_tenant: 1
+        servers:
+          flavor:
+              name: "cirros-flavor"
+          image:
+              name: "cirros"
+          servers_per_tenant: 2
+          nics:
+              [net-id: "a896f01a-b6c4-42a2-9839-8b4b7b533b34"]
+      sla:
+        failure_rate:
+          max: 0
